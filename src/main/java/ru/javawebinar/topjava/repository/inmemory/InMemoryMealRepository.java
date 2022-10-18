@@ -6,15 +6,25 @@ import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class InMemoryMealRepository implements MealRepository {
+    private final static MealRepository mealRepository = new InMemoryMealRepository();
     private final Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
         MealsUtil.meals.forEach(this::save);
+    }
+
+    private InMemoryMealRepository() {
+    }
+
+    public static MealRepository getRepository() {
+        return mealRepository;
     }
 
     @Override
@@ -34,13 +44,28 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public Meal get(int id) {
+    public Meal get(int id, Integer userId) {
+
+        return Optional.ofNullable(get(id))
+                .filter(meal -> meal.getUser().getId().equals(userId))
+                .orElse(null);
+    }
+
+    private Meal get(int id) {
         return repository.get(id);
     }
+
 
     @Override
     public Collection<Meal> getAll() {
         return repository.values();
+    }
+
+    @Override
+    public Collection<Meal> getByUserId(Integer userId) {
+        return repository.values().stream().filter(meal -> meal.getUser() != null)
+                .filter(meal -> meal.getUser().getId()
+                        .equals(userId)).collect(Collectors.toList());
     }
 }
 

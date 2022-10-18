@@ -7,7 +7,7 @@ import java.util.*;
 import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
 
 public class User extends AbstractNamedEntity {
-
+   // private Integer id;
     private String email;
 
     private String password;
@@ -77,10 +77,14 @@ public class User extends AbstractNamedEntity {
         this.roles = CollectionUtils.isEmpty(roles) ? EnumSet.noneOf(Role.class) : EnumSet.copyOf(roles);
     }
 
+
+
     public String getPassword() {
         return password;
     }
-
+    public Integer getId() {
+        return super.id;
+    }
     @Override
     public String toString() {
         return "User{" +
